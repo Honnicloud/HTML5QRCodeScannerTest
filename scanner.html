@@ -32,7 +32,7 @@
             const result = await reader.read();
             if (result.done) break;
 
-            const frameFromCamera = createImageBitmap(result.value);
+            const frameFromCamera = await createImageBitmap(result.value);
 
             const barcodes = await barcodeDetector.detect(frameFromCamera);
             try {
