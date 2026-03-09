@@ -36,23 +36,25 @@
 
             const now = performance.now()
             if (now >= nextScanTime) {
-              nextScanTime = now + 200
-
+              nextScanTime = now + 50
               const frameFromCamera = await createImageBitmap(frame)
   
-              barcodeDetector.detect(frameFromCamera).then(barcodes => 
+              const barcodes = await barcodeDetector.detect(frameFromCamera)
+              try {
                 barcodes.forEach(barcode => {
                   const divElement = document.createElement('div')
                   divElement.innerHTML = barcode.rawValue
                   barcodeOutput.append(divElement)
                 })
-              ).catch(e => {
-                const divElement = document.createElement('div');
-                divElement.innerHTML = e;
-                barcodeOutput.append(divElement);
-              }).finally(()=> frameFromCamera.close())
+              }
+              catch(e) {
+                const divElement = document.createElement('div')
+                divElement.innerHTML = e
+                barcodeOutput.append(divElement)
+              } finally {
+                frameFromCamera.close()
+              }
             }
-            
             frame.close()
           }
         }
