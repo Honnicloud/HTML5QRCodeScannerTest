@@ -32,7 +32,11 @@
                   divElement.innerHTML = barcode.rawValue
                   outputElement.append(divElement)
                 })
+              }).catch(e => {
+                outputElement.innerHTML = e
               })
+          }).catch(e => {
+            outputElement.innerHTML = e
           })
       }
     </script>
