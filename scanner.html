@@ -33,7 +33,7 @@
             if (result.done) break;
 
             createImageBitmap(result.value).then(async frame => {
-              const barcodes = await barcodeDetector.detect(frameFromCamera);
+              const barcodes = await barcodeDetector.detect(frame);
               try {
                 barcodes.forEach(barcode => {
                   const divElement = document.createElement('div')
@@ -43,10 +43,10 @@
               }
               catch(e) {
                 const divElement = document.createElement('div')
-                divElement.innerHTML = e + '\n' + frameFromCamera.toString()
+                divElement.innerHTML = e + '\n' + frame.toString()
                 barcodeOutput.append(divElement)
               } finally {
-                frameFromCamera.close()
+                frame.close()
               }
             })
 
