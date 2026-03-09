@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>QR scanner test</title>
+  </head>
+  <body>
+    <div id="output"></div>
+    <script>
+      const outputElement = document.querySelector('#output');
+
+      if (!('BarcodeDetector' in globalThis)) {
+        outputElement.innerHTML = 'Barcode Detector is not supported by this browser.'
+      } else {
+        const barcodeDetector = new BarcodeDetector({
+          formats: ['qr_code']
+        })
+
+        navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { exact: 'environment'} } })
+          .then(mediaStream => {
+            const videoElement = document.createElement('video');
+
+            videoElement.srcObject = mediaStream;
+
+            outputElement.append(videoElement)
+
+            barcodeDetector.detect(videoElement)
+              .then(barcodes => {
+                barcodes.forEach(barcode => {
+                  const divElement = document.createElement('div')
+                  divElement.innerHTML = barcode.rawValue
+                  outputElement.append(divElement)
+                })
+              })
+          })
+      }
+    </script>
+  </body>
+</html>
