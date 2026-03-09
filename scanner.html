@@ -28,29 +28,33 @@
           const mediaProcessor = new MediaStreamTrackProcessor(track);
 
           const reader = mediaProcessor.readable.getReader();
+          const nextScanTime = 0;
+
           while (true) {
-            const result = await reader.read();
-            if (result.done) break;
+            const { value:frame, done } = await reader.read();
+            if (done) break;
 
-            const frameFromCamera = createImageBitmap(result.value)
-            const frameBitmap = createImageBitmap(frameFromCamera)
+            const now = performance.now()
+            if (now >= nextScanTime) {
+              nextScanTime = now + 200
 
-            const barcodes = await barcodeDetector.detect(frameBitmap);
-            try {
-              barcodes.forEach(barcode => {
-                const divElement = document.createElement('div')
-                divElement.innerHTML = barcode.rawValue
-                barcodeOutput.append(divElement)
-              })
+              const frameFromCamera = await createImageBitmap(frame)
+  
+              barcodeDetector.detect(frameFromCamera).then(barcodes => 
+                barcodes.forEach(barcode => {
+                  const divElement = document.createElement('div')
+                  divElement.innerHTML = barcode.rawValue
+                  barcodeOutput.append(divElement)
+                })
+              ).catch(e => {
+                const divElement = document.createElement('div');
+                divElement.innerHTML = e;
+                barcodeOutput.append(divElement);
+              }).finally(()=> frameFromCamera.close())
             }
-            catch(e) {
-              const divElement = document.createElement('div')
-              divElement.innerHTML = e + '\n' + frameBitmap.toString()
-              barcodeOutput.append(divElement)
-            } finally {
-              frameFromCamera.close()
-            }
-        }
+            
+            frame.close()
+          }
         }
       }
 
