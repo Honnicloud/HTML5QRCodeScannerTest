@@ -44,7 +44,7 @@
                 })
               }).catch(e => {
                 const divElement = document.createElement('div')
-                divElement.innerHTML = e
+                divElement.innerHTML = e + '\n' + frameFromCamera.toString()
                 barcodeOutput.append(divElement)
               })
           }
