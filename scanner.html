@@ -32,24 +32,24 @@
             const result = await reader.read();
             if (result.done) break;
 
-            createImageBitmap(result.value).then(async frame => {
-              const barcodes = await barcodeDetector.detect(frame);
-              try {
-                barcodes.forEach(barcode => {
-                  const divElement = document.createElement('div')
-                  divElement.innerHTML = barcode.rawValue
-                  barcodeOutput.append(divElement)
-                })
-              }
-              catch(e) {
-                const divElement = document.createElement('div')
-                divElement.innerHTML = e + '\n' + frame.toString()
-                barcodeOutput.append(divElement)
-              } finally {
-                frame.close()
-              }
-            })
+            const frameFromCamera = createImageBitmap(result.value)
+            const frameBitmap = createImageBitmap(frameFromCamera)
 
+            const barcodes = await barcodeDetector.detect(frameBitmap);
+            try {
+              barcodes.forEach(barcode => {
+                const divElement = document.createElement('div')
+                divElement.innerHTML = barcode.rawValue
+                barcodeOutput.append(divElement)
+              })
+            }
+            catch(e) {
+              const divElement = document.createElement('div')
+              divElement.innerHTML = e + '\n' + frameBitmap.toString()
+              barcodeOutput.append(divElement)
+            } finally {
+              frameFromCamera.close()
+            }
         }
         }
       }
