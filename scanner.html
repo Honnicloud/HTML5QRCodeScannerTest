@@ -10,20 +10,24 @@
     <script>
       const outputElement = document.querySelector('#output');
 
-      if (!('BarcodeDetector' in globalThis)) {
-        outputElement.innerHTML = 'Barcode Detector is not supported by this browser.'
-      } else {
-        const barcodeDetector = new BarcodeDetector({
-          formats: ['qr_code']
-        })
+      navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { exact: 'environment'} } })
+        .then(mediaStream => {
+          const videoElement = document.createElement('video');
 
-        navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { exact: 'environment'} } })
-          .then(mediaStream => {
-            const videoElement = document.createElement('video');
+          videoElement.height = 800
+          videoElement.width = 450
+          videoElement.srcObject = mediaStream;
 
-            videoElement.srcObject = mediaStream;
+          outputElement.append(videoElement)
 
-            outputElement.append(videoElement)
+          videoElement.onloadedmetadata = () => videoElement.play()
+
+          if (!('BarcodeDetector' in globalThis)) {
+            outputElement.innerHTML = 'Barcode Detector is not supported by this browser.'
+          } else {
+            const barcodeDetector = new BarcodeDetector({
+              formats: ['qr_code']
+            })
 
             barcodeDetector.detect(videoElement)
               .then(barcodes => {
@@ -35,10 +39,10 @@
               }).catch(e => {
                 outputElement.innerHTML = e
               })
-          }).catch(e => {
-            outputElement.innerHTML = e
-          })
-      }
+          }
+        }).catch(e => {
+          outputElement.innerHTML = e
+        })
     </script>
   </body>
 </html>
