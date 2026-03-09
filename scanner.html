@@ -37,11 +37,15 @@
                   outputElement.append(divElement)
                 })
               }).catch(e => {
-                outputElement.innerHTML = e
+                const divElement = document.createElement('div')
+                divElement.innerHTML = e
+                outputElement.append(divElement)
               })
           }
         }).catch(e => {
-          outputElement.innerHTML = e
+          const divElement = document.createElement('div')
+          divElement.innerHTML = e
+          outputElement.append(divElement)
         })
     </script>
   </body>
