@@ -10,26 +10,26 @@
     <script>
       const outputElement = document.querySelector('#output');
 
-      navigator.mediaDevices.getUserMedia({ audio: false, video: true })
-        .then(mediaStream => {
-          const videoElement = document.createElement('video');
+      async function scanForQrCodes(mediaStream) {
+        if (!('BarcodeDetector' in globalThis)) {
+          outputElement.innerHTML = 'Barcode Detector is not supported by this browser.'
+        } else {
+          const barcodeDetector = new BarcodeDetector({
+            formats: ['qr_code']
+          })
 
-          videoElement.height = 800
-          videoElement.width = 450
-          videoElement.srcObject = mediaStream;
+          const track = mediaStream.getVideoTracks()[0];
+          const mediaProcessor = new MediaStreamTrackProcessor(track);
 
-          outputElement.append(videoElement)
+          const reader = mediaProcessor.readable.getReader();
+          while (true) {
+            const result = await reader.read();
+            if (result.done) break;
 
-          videoElement.onloadedmetadata = () => videoElement.play()
-
-          if (!('BarcodeDetector' in globalThis)) {
-            outputElement.innerHTML = 'Barcode Detector is not supported by this browser.'
-          } else {
-            const barcodeDetector = new BarcodeDetector({
-              formats: ['qr_code']
-            })
-
-            barcodeDetector.detect(videoElement)
+            let frame = result.value;
+            if (frame.done) { break }
+            const frameFromCamera = result.value
+            barcodeDetector.detect(frameFromCamera)
               .then(barcodes => {
                 barcodes.forEach(barcode => {
                   const divElement = document.createElement('div')
@@ -42,6 +42,22 @@
                 outputElement.append(divElement)
               })
           }
+        }
+      }
+
+      navigator.mediaDevices.getUserMedia({ audio: false, video: true })
+        .then(mediaStream => {
+          const videoElement = document.createElement('video');
+
+          videoElement.height = 400
+          videoElement.width = 225
+          videoElement.srcObject = mediaStream;
+
+          outputElement.append(videoElement)
+
+          videoElement.onloadedmetadata = () => videoElement.play()
+
+          scanForQrCodes(mediaStream)
         }).catch(e => {
           const divElement = document.createElement('div')
           divElement.innerHTML = e
