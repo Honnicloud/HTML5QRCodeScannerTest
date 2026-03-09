@@ -11,8 +11,14 @@
       const outputElement = document.querySelector('#output');
 
       async function scanForQrCodes(mediaStream) {
+        let barcodeOutput = document.querySelector('#barcodeOutput')
+        if (!barcodeOutput) {
+          barcodeOutput = document.createElement('div')
+          barcodeOutput.id = 'barcodeOutput'
+          outputElement.append(barcodeOutput)
+        }
         if (!('BarcodeDetector' in globalThis)) {
-          outputElement.innerHTML = 'Barcode Detector is not supported by this browser.'
+          barcodeOutput.innerHTML = 'Barcode Detector is not supported by this browser.'
         } else {
           const barcodeDetector = new BarcodeDetector({
             formats: ['qr_code']
@@ -34,18 +40,18 @@
                 barcodes.forEach(barcode => {
                   const divElement = document.createElement('div')
                   divElement.innerHTML = barcode.rawValue
-                  outputElement.append(divElement)
+                  barcodeOutput.append(divElement)
                 })
               }).catch(e => {
                 const divElement = document.createElement('div')
                 divElement.innerHTML = e
-                outputElement.append(divElement)
+                barcodeOutput.append(divElement)
               })
           }
         }
       }
 
-      navigator.mediaDevices.getUserMedia({ audio: false, video: true })
+      navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: 'environment' } })
         .then(mediaStream => {
           const videoElement = document.createElement('video');
 
