@@ -35,12 +35,13 @@
 
           const reader = mediaProcessor.readable.getReader();
           const nextScanTime = 0;
-
-          while (true) {
+          scannerStatus.innerHTML = 'Is scanning for items'
+          reader.closed.then(()=>{
             scannerStatus.innerHTML = 'Has stopped scanning for items'
+          })
+          while (true) {
             const { value:frame, done } = await reader.read();
             if (done) break;
-            scannerStatus.innerHTML = 'Is scanning for items'
 
             const now = performance.now()
             if (now >= nextScanTime) {
