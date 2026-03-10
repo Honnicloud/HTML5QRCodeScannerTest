@@ -34,7 +34,7 @@
           const mediaProcessor = new MediaStreamTrackProcessor(track);
 
           const reader = mediaProcessor.readable.getReader();
-          const nextScanTime = 0;
+          let nextScanTime = 0;
           scannerStatus.innerHTML = 'Is scanning for items'
           reader.closed.then(()=>{
             scannerStatus.innerHTML = 'Has stopped scanning for items'
