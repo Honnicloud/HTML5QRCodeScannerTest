@@ -11,6 +11,12 @@
       const outputElement = document.querySelector('#output');
 
       async function scanForQrCodes(mediaStream) {
+        let scannerStatus = document.querySelector('#scannerStatus')
+        if (!scannerStatus) {
+          scannerStatus = document.createElement('div')
+          scannerStatus.id = 'scannerStatus'
+          outputElement.append(scannerStatus)
+        }
         let barcodeOutput = document.querySelector('#barcodeOutput')
         if (!barcodeOutput) {
           barcodeOutput = document.createElement('div')
@@ -31,8 +37,10 @@
           const nextScanTime = 0;
 
           while (true) {
+            scannerStatus.innerHTML = 'Has stopped scanning for items'
             const { value:frame, done } = await reader.read();
             if (done) break;
+            scannerStatus.innerHTML = 'Is scanning for items'
 
             const now = performance.now()
             if (now >= nextScanTime) {
